@@ -5,7 +5,8 @@ import 'text_field_container.dart';
 
 class RoundedPasswordField extends StatefulWidget {
   final ValueChanged<String> onChanged;
-  const RoundedPasswordField({Key key, this.onChanged}) : super(key: key);
+  const RoundedPasswordField({Key key, @required this.onChanged})
+      : super(key: key);
 
   @override
   _RoundedPasswordFieldState createState() => _RoundedPasswordFieldState();
