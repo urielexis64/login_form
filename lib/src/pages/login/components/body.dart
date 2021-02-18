@@ -96,7 +96,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
             builder: (context, AsyncSnapshot snapshot) {
               return RoundedButton(
                 text: 'LOGIN',
-                press: snapshot.hasData ? () => _login(bloc) : null,
+                press: snapshot.hasData ? () => _login() : null,
               );
             },
           ),
@@ -110,5 +110,9 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
         ],
       ),
     ));
+  }
+
+  _login() {
+    Navigator.pushReplacementNamed(context, 'home');
   }
 }
