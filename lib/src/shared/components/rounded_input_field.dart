@@ -4,13 +4,17 @@ import 'package:login_form/constants.dart';
 import 'text_field_container.dart';
 
 class RoundedInputField extends StatelessWidget {
+  final String labelText;
   final String hintText;
+  final String errorText;
   final IconData icon;
   final ValueChanged<String> onChanged;
 
   const RoundedInputField(
       {Key key,
-      @required this.hintText,
+      @required this.labelText,
+      this.hintText,
+      this.errorText,
       @required this.icon,
       @required this.onChanged})
       : super(key: key);
@@ -27,6 +31,8 @@ class RoundedInputField extends StatelessWidget {
           ),
           border: InputBorder.none,
           hintText: hintText,
+          labelText: labelText,
+          errorText: errorText,
           labelStyle: TextStyle(color: kPrimaryColor)),
     ));
   }
