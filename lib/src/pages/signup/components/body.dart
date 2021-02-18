@@ -11,9 +11,7 @@ import 'or_divider.dart';
 import 'social_icon.dart';
 
 class Body extends StatefulWidget {
-  final Widget child;
-
-  const Body({Key key, @required this.child}) : super(key: key);
+  const Body({Key key}) : super(key: key);
 
   @override
   _BodyState createState() => _BodyState();
@@ -70,7 +68,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
             ),
           ),
           RoundedInputField(
-              hintText: 'Email', icon: Icons.person, onChanged: (value) {}),
+              labelText: 'Email', icon: Icons.person, onChanged: (value) {}),
           RoundedPasswordField(
             onChanged: (value) {},
           ),
