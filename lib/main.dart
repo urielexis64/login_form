@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_form/constants.dart';
 import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/pages/home/home_page.dart';
 import 'package:login_form/src/pages/login/login_page.dart';
@@ -13,6 +14,11 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Login Forms',
+      theme: ThemeData(
+        // Define the default brightness and colors.
+        primaryColor: kPrimaryColor,
+        accentColor: kPrimaryLightColor,
+      ),
       initialRoute: 'login',
       routes: {
         'home': (BuildContext context) => HomePage(),
