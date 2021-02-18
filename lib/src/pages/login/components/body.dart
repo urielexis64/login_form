@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/shared/animation/infinite_animation.dart';
 import 'package:login_form/src/shared/components/already_have_an_account.dart';
 import 'package:login_form/src/shared/components/rounded_button.dart';
@@ -40,6 +41,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of(context);
     Size size = MediaQuery.of(context).size;
 
     return Background(
@@ -68,17 +70,35 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
           SizedBox(
             height: size.height * 0.03,
           ),
-          RoundedInputField(
-            hintText: 'Email',
-            icon: Icons.email,
-            onChanged: (value) {},
+          StreamBuilder(
+            stream: bloc.emailStream,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return RoundedInputField(
+                labelText: 'Email',
+                hintText: 'example@email.com',
+                errorText: snapshot.error,
+                icon: Icons.email,
+                onChanged: bloc.changeEmail,
+              );
+            },
           ),
-          RoundedPasswordField(
-            onChanged: (value) {},
+          StreamBuilder(
+            stream: bloc.passwordStream,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return RoundedPasswordField(
+                onChanged: bloc.changePassword,
+                errorText: snapshot.error,
+              );
+            },
           ),
-          RoundedButton(
-            text: 'LOGIN',
-            press: () {},
+          StreamBuilder(
+            stream: bloc.formValidStream,
+            builder: (context, AsyncSnapshot snapshot) {
+              return RoundedButton(
+                text: 'LOGIN',
+                press: snapshot.hasData ? () => _login(bloc) : null,
+              );
+            },
           ),
           SizedBox(
             height: size.height * 0.03,
