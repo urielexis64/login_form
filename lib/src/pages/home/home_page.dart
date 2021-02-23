@@ -53,6 +53,19 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: _createButton(context),
     );
+  }
+
+  Widget _createButton(BuildContext context) {
+    return FloatingActionButton(
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.deepPurple,
+        onPressed: () {
+          Navigator.pushNamed(context, 'product');
+        });
   }
 }
