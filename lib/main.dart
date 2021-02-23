@@ -3,6 +3,7 @@ import 'package:login_form/constants.dart';
 import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/pages/home/home_page.dart';
 import 'package:login_form/src/pages/login/login_page.dart';
+import 'package:login_form/src/pages/product/product_page.dart';
 import 'package:login_form/src/pages/signup/signup_page.dart';
 
 void main() => runApp(MyApp());
@@ -19,11 +20,12 @@ class MyApp extends StatelessWidget {
         primaryColor: kPrimaryColor,
         accentColor: kPrimaryLightColor,
       ),
-      initialRoute: 'login',
+      initialRoute: 'home',
       routes: {
         'home': (BuildContext context) => HomePage(),
         'login': (BuildContext context) => LoginPage(),
         'signup': (BuildContext context) => SignupPage(),
+        'product': (BuildContext context) => ProductPage(),
       },
     ));
   }
