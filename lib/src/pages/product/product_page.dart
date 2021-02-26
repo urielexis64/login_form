@@ -11,13 +11,21 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   final productsProvider = ProductsProvider();
 
   ProductModel product = ProductModel();
+  bool _saving = false;
 
   @override
   Widget build(BuildContext context) {
+    final ProductModel productArg = ModalRoute.of(context).settings.arguments;
+    if (productArg != null) {
+      product = productArg;
+    }
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: "Producto".text.semiBold.make(),
         actions: [
@@ -96,7 +104,7 @@ class _ProductPageState extends State<ProductPage> {
             onSurface: Colors.grey,
             shape: StadiumBorder()),
         label: 'Save'.text.make(),
-        onPressed: _submit,
+        onPressed: _saving ? null : _submit,
         icon: Icon(Icons.save));
   }
 
@@ -117,10 +125,29 @@ class _ProductPageState extends State<ProductPage> {
 
     formKey.currentState.save();
 
-    print(product.title);
-    print(product.value);
-    print(product.available);
+    setState(() {
+      _saving = true;
+    });
 
-    productsProvider.createProduct(product);
+    String message;
+
+    if (product.id == null) {
+      productsProvider.createProduct(product);
+      message = 'Product created successfully';
+    } else {
+      productsProvider.updateProduct(product);
+      message = 'Product updated successfully';
+    }
+
+    showSnackbar(message);
+    Navigator.pop(context);
+  }
+
+  void showSnackbar(String message) {
+    final snackbar = SnackBar(
+      content: Text(message),
+      duration: Duration(milliseconds: 2500),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 }
