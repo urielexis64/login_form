@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_form/src/models/product_model.dart';
+import 'package:login_form/src/providers/products_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:login_form/src/utils/utils.dart' as utils;
 
@@ -10,6 +11,7 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
+  final productsProvider = ProductsProvider();
 
   ProductModel product = ProductModel();
 
@@ -117,5 +119,8 @@ class _ProductPageState extends State<ProductPage> {
 
     print(product.title);
     print(product.value);
+    print(product.available);
+
+    productsProvider.createProduct(product);
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:login_form/src/bloc/provider.dart';
+import 'package:login_form/src/models/product_model.dart';
+import 'package:login_form/src/providers/products_provider.dart';
 
 class HomePage extends StatelessWidget {
+  final productsProvider = ProductsProvider();
+
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of(context);
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -17,43 +19,43 @@ class HomePage extends StatelessWidget {
               onPressed: () => Navigator.pushReplacementNamed(context, 'login'))
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 20),
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset(
-                'assets/icons/welcome.svg',
-                width: size.width * .8,
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.email),
-              title: Text(
-                '${bloc.email}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-              ),
-              trailing: Icon(Icons.edit),
-              onTap: () {},
-              tileColor: Colors.grey[100],
-              shape: StadiumBorder(),
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.lock),
-              title: Text('${bloc.password}',
-                  style: TextStyle(fontWeight: FontWeight.w400)),
-              trailing: Icon(Icons.edit),
-              onTap: () {},
-              tileColor: Colors.grey[100],
-              shape: StadiumBorder(),
-            )
-          ],
-        ),
-      ),
+      body: _createListView(),
       floatingActionButton: _createButton(context),
+    );
+  }
+
+  Widget _createListView() {
+    return FutureBuilder(
+      future: productsProvider.loadProducts(),
+      builder:
+          (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
+        if (snapshot.hasData) {
+          List<ProductModel> products = snapshot.data;
+          return ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) =>
+                  _createItem(context, products[index]));
+        } else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  Widget _createItem(BuildContext context, ProductModel product) {
+    return Dismissible(
+      key: UniqueKey(),
+      background: Container(color: Colors.redAccent),
+      onDismissed: (direction) {
+        productsProvider.removeProduct(product.id);
+      },
+      child: ListTile(
+        title: Text(product.title),
+        subtitle: Text('${product.id}'),
+        onTap: () {
+          Navigator.pushNamed(context, 'product', arguments: product);
+        },
+      ),
     );
   }
 
