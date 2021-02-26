@@ -15,6 +15,15 @@ class ProductsProvider {
     return true;
   }
 
+  Future<bool> updateProduct(ProductModel product) async {
+    final uri = Uri.https(_url, '/products/${product.id}.json');
+    final response = await http.put(uri, body: productModelToJson(product));
+
+    final decodedData = json.decode(response.body);
+    print(decodedData);
+    return true;
+  }
+
   Future<List<ProductModel>> loadProducts() async {
     final uri = Uri.https(_url, '/products.json');
     final response = await http.get(uri);
