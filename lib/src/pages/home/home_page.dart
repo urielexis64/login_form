@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/models/product_model.dart';
+import 'package:login_form/src/pages/home/components/removable_card.dart';
 import 'package:login_form/src/providers/products_provider.dart';
+import 'package:login_form/src/shared/components/custom_alert_dialog.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -36,10 +38,20 @@ class _HomePageState extends State<HomePage> {
           (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
         if (snapshot.hasData) {
           List<ProductModel> products = snapshot.data;
-          return ListView.builder(
-              itemCount: products.length,
-              itemBuilder: (context, index) =>
-                  _createItem(context, products[index], products, index));
+          return Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: GridView.builder(
+                physics: BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 6.0,
+                  mainAxisSpacing: 6.0,
+                ),
+                itemCount: products.length,
+                itemBuilder: (context, index) =>
+                    _createItem(context, products[index], products, index)),
+          );
         } else {
           return Center(child: CircularProgressIndicator());
         }
@@ -49,22 +61,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createItem(
       BuildContext context, ProductModel product, List products, int index) {
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(color: Colors.redAccent),
-      onDismissed: (direction) {
-        productsProvider.removeProduct(product.id).then((value) => setState(() {
-              products.removeAt(index);
-            }));
-      },
-      child: ListTile(
-        title: Text(product.title),
-        subtitle: Text('${product.id}'),
-        onTap: () {
-          Navigator.pushNamed(context, 'product', arguments: product);
+    return RemovableCard(
+        product: product,
+        onRemove: () {
+          _removeItem(product, products, index);
         },
-      ),
-    );
+        onTap: () =>
+            Navigator.pushNamed(context, 'product', arguments: product));
   }
 
   Widget _createButton(BuildContext context) {
@@ -75,7 +78,33 @@ class _HomePageState extends State<HomePage> {
         ),
         backgroundColor: Colors.deepPurple,
         onPressed: () {
-          Navigator.pushNamed(context, 'product');
+          Navigator.pushNamed(context, 'product').then((value) {
+            setState(() {});
+          });
         });
+  }
+
+  Future<void> _removeItem(
+      ProductModel product, List products, int index) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: 'Remove item',
+          onConfirmed: () {
+            productsProvider
+                .removeProduct(product.id)
+                .then((value) => setState(() {
+                      products.removeAt(index);
+                      Navigator.pop(context);
+                    }));
+          },
+          contentWidgets: [
+            Text("Are you sure you want to remove '${product.title}'?"),
+          ],
+        );
+      },
+    );
   }
 }
