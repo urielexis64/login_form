@@ -27,6 +27,7 @@ dependencies:
     flutter_svg: ^0.20.0-nullsafety.3
     http: ^0.13.0
     image_picker: ^0.7.0
+    mime_type: ^0.3.2
     rxdart: ^0.25.0
     velocity_x: ^1.4.1
 
