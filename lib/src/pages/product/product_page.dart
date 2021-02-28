@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:login_form/src/models/product_model.dart';
 import 'package:login_form/src/providers/products_provider.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -15,7 +18,9 @@ class _ProductPageState extends State<ProductPage> {
   final productsProvider = ProductsProvider();
 
   ProductModel product = ProductModel();
+  final picker = ImagePicker();
   bool _saving = false;
+  File photo;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +35,9 @@ class _ProductPageState extends State<ProductPage> {
         title: "Producto".text.semiBold.make(),
         actions: [
           IconButton(
-              icon: Icon(Icons.photo_size_select_actual), onPressed: () {}),
-          IconButton(icon: Icon(Icons.camera_alt), onPressed: () {}),
+              icon: Icon(Icons.photo_size_select_actual),
+              onPressed: _selectImage),
+          IconButton(icon: Icon(Icons.camera_alt), onPressed: _takePhoto),
         ],
       ),
       body: SingleChildScrollView(
@@ -41,6 +47,8 @@ class _ProductPageState extends State<ProductPage> {
               key: formKey,
               child: Column(
                 children: [
+                  _showImage(),
+                  20.heightBox,
                   _createName(),
                   20.heightBox,
                   _createPrice(),
@@ -149,5 +157,39 @@ class _ProductPageState extends State<ProductPage> {
       duration: Duration(milliseconds: 2500),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  }
+
+  Widget _showImage() {
+    if (product.urlImage != null) {
+      return Container();
+    } else {
+      return photo?.path != null
+          ? Image.file(
+              photo,
+              fit: BoxFit.cover,
+              height: 250,
+            )
+          : Image.asset(
+              'assets/images/no-image.png',
+              height: 250,
+              fit: BoxFit.cover,
+            );
+    }
+  }
+
+  _selectImage() async {
+    final selectedImage = await picker.getImage(source: ImageSource.gallery);
+
+    if (selectedImage != null) {
+      photo = File(selectedImage.path);
+    } else {
+      print('No image selected.');
+    }
+
+    setState(() {});
+  }
+
+  _takePhoto() {
+    ImagePicker.platform.pickImage(source: ImageSource.gallery);
   }
 }
