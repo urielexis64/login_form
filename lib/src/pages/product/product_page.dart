@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:login_form/src/models/product_model.dart';
 import 'package:login_form/src/providers/products_provider.dart';
+import 'package:login_form/src/shared/components/custom_alert_dialog.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:login_form/src/utils/utils.dart' as utils;
 
@@ -47,7 +48,7 @@ class _ProductPageState extends State<ProductPage> {
               key: formKey,
               child: Column(
                 children: [
-                  _showImage(),
+                  GestureDetector(onTap: _selectImage, child: _showImage()),
                   20.heightBox,
                   _createName(),
                   20.heightBox,
@@ -66,6 +67,7 @@ class _ProductPageState extends State<ProductPage> {
     return TextFormField(
       textCapitalization: TextCapitalization.sentences,
       initialValue: product.title,
+      focusNode: FocusNode(canRequestFocus: false),
       decoration: InputDecoration(
         labelText: 'Product',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
@@ -86,6 +88,7 @@ class _ProductPageState extends State<ProductPage> {
     return TextFormField(
       enableInteractiveSelection: false,
       initialValue: '${product.value}',
+      focusNode: FocusNode(canRequestFocus: false),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: 'Price',
@@ -128,7 +131,7 @@ class _ProductPageState extends State<ProductPage> {
         });
   }
 
-  void _submit() {
+  void _submit() async {
     if (!formKey.currentState.validate()) return;
 
     formKey.currentState.save();
@@ -136,6 +139,13 @@ class _ProductPageState extends State<ProductPage> {
     setState(() {
       _saving = true;
     });
+
+    _loading();
+
+    if (photo != null) {
+      String urlImage = await productsProvider.uploadImage(photo);
+      product.urlImage = urlImage;
+    }
 
     String message;
 
@@ -146,9 +156,9 @@ class _ProductPageState extends State<ProductPage> {
       productsProvider.updateProduct(product);
       message = 'Product updated successfully';
     }
-
-    showSnackbar(message);
     Navigator.pop(context);
+    Navigator.pop(context);
+    showSnackbar(message);
   }
 
   void showSnackbar(String message) {
@@ -161,7 +171,11 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _showImage() {
     if (product.urlImage != null) {
-      return Container();
+      return Image.network(
+        product.urlImage,
+        height: 250,
+        fit: BoxFit.cover,
+      );
     } else {
       return photo?.path != null
           ? Image.file(
@@ -178,18 +192,43 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   _selectImage() async {
-    final selectedImage = await picker.getImage(source: ImageSource.gallery);
+    _processImage(ImageSource.gallery);
+  }
+
+  _takePhoto() {
+    _processImage(ImageSource.camera);
+  }
+
+  _processImage(ImageSource source) async {
+    final selectedImage = await picker.getImage(source: source);
 
     if (selectedImage != null) {
       photo = File(selectedImage.path);
-    } else {
-      print('No image selected.');
+      product.urlImage = null;
     }
 
     setState(() {});
   }
 
-  _takePhoto() {
-    ImagePicker.platform.pickImage(source: ImageSource.gallery);
+  Future<void> _loading() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomAlertDialog(
+          title: 'Loading...',
+          actions: false,
+          contentWidgets: [
+            Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 20),
+                Text("Uploading product...")
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 }
