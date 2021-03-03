@@ -17,10 +17,10 @@ class MyApp extends StatelessWidget {
       title: 'Login Forms',
       theme: ThemeData(
         // Define the default brightness and colors.
-        primaryColor: kPrimaryColor,
-        accentColor: kPrimaryLightColor,
+        primaryColor: Constants.kPrimaryColor,
+        accentColor: Constants.kPrimaryLightColor,
       ),
-      initialRoute: 'home',
+      initialRoute: 'login',
       routes: {
         'home': (BuildContext context) => HomePage(),
         'login': (BuildContext context) => LoginPage(),

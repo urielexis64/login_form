@@ -27,13 +27,13 @@ class _RoundedPasswordFieldState extends State<RoundedPasswordField> {
       decoration: InputDecoration(
           labelText: 'Password',
           errorText: widget.errorText,
-          labelStyle: TextStyle(color: kPrimaryColor),
-          icon: Icon(Icons.lock, color: kPrimaryColor),
+          labelStyle: TextStyle(color: Constants.kPrimaryColor),
+          icon: Icon(Icons.lock, color: Constants.kPrimaryColor),
           suffixIcon: GestureDetector(
             onTap: _hide,
             child: Icon(
               _icon,
-              color: kPrimaryColor,
+              color: Constants.kPrimaryColor,
             ),
           ),
           border: InputBorder.none),

@@ -9,7 +9,7 @@ class RoundedButton extends StatelessWidget {
     Key key,
     @required this.text,
     @required this.press,
-    this.color = kPrimaryColor,
+    this.color = Constants.kPrimaryColor,
     this.textColor = Colors.white,
   }) : super(key: key);
 

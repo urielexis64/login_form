@@ -159,7 +159,7 @@ class _ProductPageState extends State<ProductPage> {
     final snackbar = SnackBar(
       content: Text(message),
       duration: Duration(milliseconds: 2500),
-      backgroundColor: kPrimaryColor,
+      backgroundColor: Constants.kPrimaryColor,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
@@ -189,7 +189,7 @@ class _ProductPageState extends State<ProductPage> {
     return Card(
         child: child,
         elevation: 3,
-        shadowColor: kPrimaryColor,
+        shadowColor: Constants.kPrimaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         clipBehavior: Clip.antiAlias);
   }
