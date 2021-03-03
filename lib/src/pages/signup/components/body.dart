@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/shared/animation/infinite_animation.dart';
 import 'package:login_form/src/shared/components/already_have_an_account.dart';
 import 'package:login_form/src/shared/components/rounded_button.dart';
@@ -40,6 +41,7 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of(context);
     Size size = MediaQuery.of(context).size;
 
     return Background(
@@ -67,14 +69,33 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
               height: size.height * .3,
             ),
           ),
-          RoundedInputField(
-              labelText: 'Email', icon: Icons.person, onChanged: (value) {}),
-          RoundedPasswordField(
-            onChanged: (value) {},
+          StreamBuilder(
+            stream: bloc.emailStream,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return RoundedInputField(
+                  labelText: 'Email',
+                  errorText: snapshot.error,
+                  icon: Icons.person,
+                  onChanged: bloc.changeEmail);
+            },
           ),
-          RoundedButton(
-            text: 'SIGN UP',
-            press: () {},
+          StreamBuilder(
+            stream: bloc.passwordStream,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              return RoundedPasswordField(
+                onChanged: bloc.changePassword,
+                errorText: snapshot.error,
+              );
+            },
+          ),
+          StreamBuilder(
+            stream: bloc.formValidStream,
+            builder: (context, AsyncSnapshot snapshot) {
+              return RoundedButton(
+                text: 'SIGN UP',
+                press: snapshot.hasData ? () => _signup() : null,
+              );
+            },
           ),
           SizedBox(
             height: size.height * 0.01,
@@ -92,5 +113,9 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
         ],
       ),
     ));
+  }
+
+  _signup() {
+    Navigator.pushReplacementNamed(context, 'home');
   }
 }
