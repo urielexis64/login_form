@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:login_form/constants.dart';
 import 'package:login_form/src/models/product_model.dart';
 import 'package:login_form/src/providers/products_provider.dart';
 import 'package:login_form/src/shared/components/custom_alert_dialog.dart';
+import 'package:login_form/src/shared/components/rounded_form_field.dart';
+import 'package:login_form/src/shared/components/text_field_container.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:login_form/src/utils/utils.dart' as utils;
 
@@ -33,7 +36,7 @@ class _ProductPageState extends State<ProductPage> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: "Producto".text.semiBold.make(),
+        title: "Product".text.semiBold.make(),
         actions: [
           IconButton(
               icon: Icon(Icons.photo_size_select_actual),
@@ -51,7 +54,6 @@ class _ProductPageState extends State<ProductPage> {
                   GestureDetector(onTap: _selectImage, child: _showImage()),
                   20.heightBox,
                   _createName(),
-                  20.heightBox,
                   _createPrice(),
                   _createAvailable(),
                   50.heightBox,
@@ -64,46 +66,36 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _createName() {
-    return TextFormField(
-      textCapitalization: TextCapitalization.sentences,
+    return RoundedFormField(
+      product,
+      hintText: 'Product name',
+      icon: Icons.add_box,
+      labelText: 'Product',
       initialValue: product.title,
-      focusNode: FocusNode(canRequestFocus: false),
-      decoration: InputDecoration(
-        labelText: 'Product',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-        suffixIcon: Icon(
-          Icons.photo,
-        ),
-      ),
-      onSaved: (value) => product.title = value,
       validator: (value) {
         if (value.trim().length == 0) return 'Enter product name';
         if (value.trim().length < 3) return '3 characters at least';
         return null;
       },
+      onSaved: (value) => product.title = value,
     );
   }
 
   Widget _createPrice() {
-    return TextFormField(
-      enableInteractiveSelection: false,
+    return RoundedFormField(
+      product,
+      type: TextInputType.numberWithOptions(decimal: true),
+      hintText: 'Product price',
+      icon: Icons.attach_money,
+      labelText: 'Price',
       initialValue: '${product.value}',
-      focusNode: FocusNode(canRequestFocus: false),
-      keyboardType: TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: 'Price',
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-        suffixIcon: Icon(
-          Icons.attach_money,
-        ),
-      ),
-      onSaved: (value) => product.value = double.parse(value),
       validator: (value) {
         if (utils.isNumeric(value)) {
           return null;
         }
         return 'Only numbers';
       },
+      onSaved: (value) => product.value = double.parse(value),
     );
   }
 
@@ -120,15 +112,17 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Widget _createAvailable() {
-    return SwitchListTile(
-        value: product.available,
-        title: "Available".text.make(),
-        activeColor: Colors.deepPurple,
-        onChanged: (value) {
-          setState(() {
-            product.available = value;
-          });
-        });
+    return TextFieldContainer(
+      child: SwitchListTile(
+          value: product.available,
+          title: "Available".text.make(),
+          activeColor: Colors.deepPurple,
+          onChanged: (value) {
+            setState(() {
+              product.available = value;
+            });
+          }),
+    );
   }
 
   void _submit() async {
@@ -165,19 +159,22 @@ class _ProductPageState extends State<ProductPage> {
     final snackbar = SnackBar(
       content: Text(message),
       duration: Duration(milliseconds: 2500),
+      backgroundColor: kPrimaryColor,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   Widget _showImage() {
+    Widget child;
+
     if (product.urlImage != null) {
-      return Image.network(
+      child = Image.network(
         product.urlImage,
         height: 250,
         fit: BoxFit.cover,
       );
     } else {
-      return photo?.path != null
+      child = photo?.path != null
           ? Image.file(
               photo,
               fit: BoxFit.cover,
@@ -189,6 +186,12 @@ class _ProductPageState extends State<ProductPage> {
               fit: BoxFit.cover,
             );
     }
+    return Card(
+        child: child,
+        elevation: 3,
+        shadowColor: kPrimaryColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        clipBehavior: Clip.antiAlias);
   }
 
   _selectImage() async {
@@ -200,7 +203,8 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   _processImage(ImageSource source) async {
-    final selectedImage = await picker.getImage(source: source);
+    final selectedImage = await picker.getImage(
+        source: source, imageQuality: 30, maxHeight: 1000, maxWidth: 1000);
 
     if (selectedImage != null) {
       photo = File(selectedImage.path);
