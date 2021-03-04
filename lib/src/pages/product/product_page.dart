@@ -46,7 +46,8 @@ class _ProductPageState extends State<ProductPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(15),
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(Constants.padding),
           child: Form(
               key: formKey,
               child: Column(

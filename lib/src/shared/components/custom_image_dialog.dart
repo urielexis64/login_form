@@ -70,7 +70,7 @@ class CustomImageDialog extends StatelessWidget {
             left: Constants.padding,
             right: Constants.padding,
             child: CircleAvatar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               radius: Constants.avatarRadius,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),

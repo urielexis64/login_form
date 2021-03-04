@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:login_form/src/bloc/provider.dart';
-import 'package:login_form/src/providers/user_prodiver.dart';
+import 'package:login_form/src/providers/user_provider.dart';
 import 'package:login_form/src/shared/animation/infinite_animation.dart';
 import 'package:login_form/src/shared/components/already_have_an_account.dart';
-import 'package:login_form/src/shared/components/custom_image_dialog.dart';
 import 'package:login_form/src/shared/components/rounded_button.dart';
 import 'package:login_form/src/shared/components/rounded_input_field.dart';
 import 'package:login_form/src/shared/components/rounded_password_field.dart';
+import 'package:login_form/src/utils/utils.dart' as utils;
 
 import 'background.dart';
 import 'or_divider.dart';
@@ -121,25 +121,14 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
   _signup(LoginBloc bloc) async {
     Map<String, dynamic> response =
         await userProvider.newUser(bloc.email, bloc.password);
-
     if (response['ok']) {
-      //TODO: save user info
+      utils.alertInfo(
+          context, 'You\'re in :)', 'Welcome!', 'assets/images/success.gif');
     } else {
-      _alertInfo(response['message']);
+      utils.alertInfo(context, response['message'],
+          'Email already registered...', 'assets/images/error.gif');
     }
 
     //Navigator.pushReplacementNamed(context, 'home');
-  }
-
-  _alertInfo(String message) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return CustomImageDialog(
-            title: message,
-            subtitle: 'Email already registered...',
-            imagePath: 'assets/images/error-icon.png');
-      },
-    );
   }
 }
