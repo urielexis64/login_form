@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/models/product_model.dart';
 import 'package:login_form/src/pages/home/components/removable_card.dart';
+import 'package:login_form/src/preferences/user_prefs.dart';
 import 'package:login_form/src/providers/products_provider.dart';
 import 'package:login_form/src/shared/components/custom_alert_dialog.dart';
 
@@ -23,7 +24,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
               icon: Icon(Icons.logout),
-              onPressed: () => Navigator.pushReplacementNamed(context, 'login'))
+              onPressed: () {
+                final prefs = UserPrefs();
+                prefs.token = '';
+                Navigator.pushReplacementNamed(context, 'login');
+              })
         ],
       ),
       body: _createListView(),
