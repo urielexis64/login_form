@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:login_form/constants.dart';
+import 'package:login_form/src/bloc/provider.dart';
 import 'package:login_form/src/models/product_model.dart';
-import 'package:login_form/src/providers/products_provider.dart';
 import 'package:login_form/src/shared/components/custom_alert_dialog.dart';
 import 'package:login_form/src/shared/components/rounded_form_field.dart';
 import 'package:login_form/src/shared/components/text_field_container.dart';
@@ -19,7 +19,7 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final productsProvider = ProductsProvider();
+  ProductsBloc productsBloc;
 
   ProductModel product = ProductModel();
   final picker = ImagePicker();
@@ -28,6 +28,8 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    productsBloc = Provider.productsBloc(context);
+
     final ProductModel productArg = ModalRoute.of(context).settings.arguments;
     if (productArg != null) {
       product = productArg;
@@ -138,17 +140,17 @@ class _ProductPageState extends State<ProductPage> {
     _loading();
 
     if (photo != null) {
-      String urlImage = await productsProvider.uploadImage(photo);
+      String urlImage = await productsBloc.uploadImage(photo);
       product.urlImage = urlImage;
     }
 
     String message;
 
     if (product.id == null) {
-      productsProvider.createProduct(product);
+      productsBloc.createProduct(product);
       message = 'Product created successfully';
     } else {
-      productsProvider.updateProduct(product);
+      productsBloc.updateProduct(product);
       message = 'Product updated successfully';
     }
     Navigator.pop(context);
@@ -169,10 +171,13 @@ class _ProductPageState extends State<ProductPage> {
     Widget child;
 
     if (product.urlImage != null) {
-      child = Image.network(
-        product.urlImage,
-        height: 250,
-        fit: BoxFit.cover,
+      child = Hero(
+        tag: product.id,
+        child: Image.network(
+          product.urlImage,
+          height: 250,
+          fit: BoxFit.cover,
+        ),
       );
     } else {
       child = photo?.path != null
@@ -181,17 +186,20 @@ class _ProductPageState extends State<ProductPage> {
               fit: BoxFit.cover,
               height: 250,
             )
-          : Image.asset(
-              'assets/images/no-image.png',
-              height: 250,
-              fit: BoxFit.cover,
+          : Hero(
+              tag: 'no-image',
+              child: Image.asset(
+                'assets/images/no-image.png',
+                height: 250,
+                fit: BoxFit.cover,
+              ),
             );
     }
     return Card(
         child: child,
         elevation: 3,
         shadowColor: Constants.kPrimaryColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         clipBehavior: Clip.antiAlias);
   }
 
