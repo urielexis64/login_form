@@ -21,13 +21,18 @@ class RemovableCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: Column(children: [
             (product.urlImage == null)
-                ? Image.asset('assets/images/no-image.png')
-                : FadeInImage(
-                    placeholder: AssetImage('assets/images/jar-loading.gif'),
-                    image: NetworkImage(product.urlImage),
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                ? Hero(
+                    tag: 'no-image',
+                    child: Image.asset('assets/images/no-image.png'))
+                : Hero(
+                    tag: product.id,
+                    child: FadeInImage(
+                      placeholder: AssetImage('assets/images/jar-loading.gif'),
+                      image: NetworkImage(product.urlImage),
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
             Expanded(
               child: Divider(),
